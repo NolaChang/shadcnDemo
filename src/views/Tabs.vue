@@ -16,11 +16,20 @@
       >
         交易帳號
       </TabsTrigger>
+      <TabsTrigger
+        class=""
+        value="tabdemo"
+        :variant="(current_tab === 'tabdemo') ? 'choose' : 'unchoose'"
+        @click="onChangeTab('tabdemo')"
+      >
+        Tab Demo
+      </TabsTrigger>
     </TabsList>
     <TabsContent value="account">
       Make changes to your account here.
     </TabsContent>
     <TabsContent value="password"> Change your password here. </TabsContent>
+    <TabsContent value="tabdemo"> Here is Tab Content </TabsContent>
   </Tabs>
 </template>
 
