@@ -26,7 +26,8 @@ module.exports = {
         1:'16px',
       },
       boxShadow: {
-        "tab-choose": "2px 0px 2px 0px #00000033",
+        "tab-first_choose": "2px 0px 2px 0px #00000033",
+        "tab-choose": "0px 4px 4px 0px #00000033",
       },
       colors: {
         "textarea": "#bfbfbf",

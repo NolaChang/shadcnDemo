@@ -1,19 +1,18 @@
-<script setup lang="ts">
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-</script>
-
 <template>
-  <Tabs default-value="account">
+  <Tabs :default-value="current_tab">
     <TabsList>
       <TabsTrigger
-        class=" bg-white shadow-tab-choose z-10"
         value="account"
+        :variant="(current_tab === 'account') ? 'first_choose' : 'unchoose'"
+        @click="onChangeTab('account')"
       >
         基本資料
       </TabsTrigger>
       <TabsTrigger
-        class="bg-tab-gray"
+        class=""
         value="password"
+        :variant="(current_tab === 'password') ? 'choose' : 'unchoose'"
+        @click="onChangeTab('password')"
       >
         交易帳號
       </TabsTrigger>
@@ -24,3 +23,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
     <TabsContent value="password"> Change your password here. </TabsContent>
   </Tabs>
 </template>
+
+<script setup lang="ts">
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ref } from "vue";
+
+let current_tab = ref("account");
+const onChangeTab = (tab_str: string) => {
+  current_tab.value = tab_str;
+};
+</script>
