@@ -40,9 +40,9 @@
   <button id="getCheckBoxbtn" @click="getCheckBox">getCheckBox</button>
 
   <ul id="menu" class="context-menu hidden">
-    <li :is-show="!cutStatus.valueOf" id="cut">剪下</li>
-    <li :is-show="cutStatus.valueOf" id="paste">向下插入</li>
-    <li :is-show="cutStatus.valueOf" id="cancel">取消選取</li>
+    <li v-show="!cutStatus" id="cut">剪下</li>
+    <li v-show="cutStatus" id="paste">向下插入</li>
+    <li v-show="cutStatus" id="cancel">取消選取</li>
   </ul>
 </template>
 
