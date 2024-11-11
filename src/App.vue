@@ -4,8 +4,7 @@ import Tabs from "./views/Tabs.vue";
 import TagsInput from "./views/TagsInput.vue";
 import Textarea from "./views/Textarea.vue";
 import Toaster from "./views/Toaster.vue";
-// import TestTable from "./views/TestTable.vue";
-import TanstackTable from "./views/TanstackTable.vue";
+import UseTable from "./views/UseTable.vue";
 </script>
 
 <template>
@@ -18,7 +17,7 @@ import TanstackTable from "./views/TanstackTable.vue";
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" /> -->
-  <div id="demo" class="mx-5">
+  <!-- <div id="demo" class="mx-5">
     <br />
     <Tabs />
     <br />
@@ -27,10 +26,8 @@ import TanstackTable from "./views/TanstackTable.vue";
     <Textarea />
     <br />
     <Toaster />
-  </div>
-  <!-- <TestTable /> -->
-   <!-- <p> TestTable</p>
-   <TanstackTable/> -->
+  </div> -->
+  <UseTable />
 </template>
 
 <style scoped>
