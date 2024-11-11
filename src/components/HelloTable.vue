@@ -73,6 +73,7 @@ const props = defineProps({
 });
 
 const cut = ref<HTMLElement | null>(null);
+const cut_id = ref<string>("");
 const insertedId = ref<string>("");
 const cutStatus = ref<boolean>(false);
 const current_page = ref(1);
@@ -118,6 +119,17 @@ watch(current_page, () => {
   const start = (current_page.value - 1) * props.pageSize;
   show_table.value = props.content.slice(start, start + props.pageSize);
 });
+// 監聽 table_content 的變化，並觸發更新分頁資料
+watch(
+  props.content,
+  (newValue) => {
+    console.log("table_content 更新了", newValue);
+    // 這裡可以放置一些邏輯來確保在資料變更時重新顯示當前頁面
+    // 比如更新當前頁面的資料（如果需要的話）
+  },
+  { deep: true }
+);
+
 onMounted(() => {
   let items = document.querySelectorAll("tr");
   items.forEach((item, index) => {
@@ -135,6 +147,7 @@ onMounted(() => {
       if (!cutStatus.value) {
         console.log("現在在剪");
         let cutMenu = document.getElementById("cut");
+        // 點擊剪下
         cutMenu.onclick = () => {
           cut.value = document.getElementById(targetId);
           console.log("剪下: ");
@@ -142,9 +155,11 @@ onMounted(() => {
           // 使用 rowStyles 儲存背景顏色
           rowStyles.value[targetId] = "gray";
           cutStatus.value = true;
+          cut_id.value = targetId;
+          console.log(cut_id);
         };
       } else {
-        console.log(cutStatus);
+        // console.log(cutStatus);
         insertedId.value = targetId;
       }
     });
@@ -160,10 +175,30 @@ const cancelChoose = () => {
   cutStatus.value = false;
   cut.value = null;
 };
-const insertInto = () => {
-  console.log(insertedId.value);
-  console.log(cut.value);
-  console.log("serious?" + cut.value?.getAttribute("id"));
+const insertInto = async () => {
+  rowStyles.value = {};
+  console.log(`Switch ${insertedId.value} & ${cut_id.value}`);
+  const indexToMove = Number(
+    props.content.findIndex((temp: any) => temp.id == cut_id.value)
+  );
+  const newIndex =
+    Number(
+      props.content.findIndex((temp: any) => temp.id == insertedId.value)
+    ) + 1;
+  //   const indexToMove = Number(cut_id.value)-1;
+  //   const newIndex = Number(insertedId.value)-1;
+  //   await console.log(props.content.findIndex((temp:any)=> temp.id == insertedId.value));
+  console.log(props.content);
+  //   const content = [...props.content];
+  const [movedItem] = props.content.splice(indexToMove, 1);
+
+  props.content.splice(newIndex, 0, movedItem);
+
+  // 資料更新後，重新更新顯示的當前頁面資料
+  const start = (current_page.value - 1) * props.pageSize;
+  show_table.value = props.content.slice(start, start + props.pageSize);
+
+  cutStatus.value = false;
 };
 </script>
 <style scoped>
