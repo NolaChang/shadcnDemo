@@ -5,7 +5,7 @@ import autoprefixer from 'autoprefixer'
 
 import tailwind from 'tailwindcss'
 import { defineConfig } from 'vite'
-
+import { vitePluginFakeServer } from "vite-plugin-fake-server";
 // https://vite.dev/config/
 export default defineConfig({
   css: {
@@ -15,6 +15,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    vitePluginFakeServer(),
   ],
   resolve: {
     alias: {

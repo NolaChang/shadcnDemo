@@ -6,7 +6,7 @@
     :total-items="15"
     :check-box="true"
   >
-  <button>展開</button>
+    <button>展開</button>
     <!-- <button class="editbtn" style="margin: 3px; color: darkorange; border: 1px solid darkorange; padding:3px 5px; border-radius:8px">編輯</button>
     <button class="deletebtn" style="margin: 3px; color: red; border: 1px solid red; padding:3px 5px; border-radius:8px">刪除</button> -->
   </HelloTable>
@@ -15,6 +15,20 @@
 <script setup lang="ts">
 import HelloTable from "../components/HelloTable.vue";
 import { reactive } from "vue";
+import axios from "axios";
+
+function getData() {
+  axios
+    .get("/mock/getUserInfo")
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+getData();
+
 const table_title = ["id", "name", "age"];
 const table_content = reactive(
   Array.from({ length: 15 }, (_, i) => ({
