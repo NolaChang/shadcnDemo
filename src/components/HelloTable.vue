@@ -185,9 +185,6 @@ const insertInto = async () => {
     Number(
       props.content.findIndex((temp: any) => temp.id == insertedId.value)
     ) + 1;
-  //   const indexToMove = Number(cut_id.value)-1;
-  //   const newIndex = Number(insertedId.value)-1;
-  //   await console.log(props.content.findIndex((temp:any)=> temp.id == insertedId.value));
   console.log(props.content);
   //   const content = [...props.content];
   const [movedItem] = props.content.splice(indexToMove, 1);
