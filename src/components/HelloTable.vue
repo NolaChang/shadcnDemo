@@ -14,7 +14,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in show_table" :id="item.id" :style="{ backgroundColor: rowStyles[index] }">
+      <tr
+        v-for="(item, index) in show_table"
+        :id="item.id"
+        :style="{ backgroundColor: rowStyles[item.id] }"
+      >
         <th v-show="props.checkBox">
           <input
             type="checkbox"
@@ -42,7 +46,7 @@
   <ul id="menu" class="context-menu hidden">
     <li v-show="!cutStatus" id="cut">剪下</li>
     <li v-show="cutStatus" id="paste">向下插入</li>
-    <li v-show="cutStatus" id="cancel">取消選取</li>
+    <li v-show="cutStatus" id="cancel" @click="cancelChoose">取消選取</li>
   </ul>
 </template>
 
@@ -81,7 +85,7 @@ const chagePage = (page: number) => {
 };
 
 //chat
-const rowStyles = ref<Record<number, string>>({});  // 儲存每行的背景顏色
+const rowStyles = ref<Record<number, string>>({}); // 儲存每行的背景顏色
 // 用來存儲每一行的選擇狀態
 const selectedItems = ref<boolean[]>([]);
 
@@ -135,7 +139,7 @@ onMounted(() => {
           console.log("剪下: ");
           console.log(cut);
           // 使用 rowStyles 儲存背景顏色
-          rowStyles.value[index-1] = "gray";
+          rowStyles.value[index] = "gray";
           cutStatus.value = true;
         };
       }
@@ -146,6 +150,12 @@ onMounted(() => {
     menu?.classList.add("hidden");
   });
 });
+
+const cancelChoose = () => {
+  rowStyles.value = {};
+  cutStatus.value = false;
+  cut.value = null;
+};
 </script>
 <style scoped>
 .context-menu {
