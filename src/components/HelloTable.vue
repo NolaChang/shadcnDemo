@@ -45,7 +45,7 @@
 
   <ul id="menu" class="context-menu hidden">
     <li v-show="!cutStatus" id="cut">剪下</li>
-    <li v-show="cutStatus" id="paste">向下插入</li>
+    <li v-show="cutStatus" id="paste" @click="insertInto">向下插入</li>
     <li v-show="cutStatus" id="cancel" @click="cancelChoose">取消選取</li>
   </ul>
 </template>
@@ -73,13 +73,13 @@ const props = defineProps({
 });
 
 const cut = ref<HTMLElement | null>(null);
+const insertedId = ref<string>("");
 const cutStatus = ref<boolean>(false);
 const current_page = ref(1);
 const show_table = ref(props.content.slice(0, props.pageSize));
 const totalPages = Math.ceil(props.totalItems / props.pageSize);
 const chagePage = (page: number) => {
   current_page.value = page;
-
   // 當切換頁面時，重設當前頁面的選擇狀態
   selectedItems.value = Array(show_table.value.length).fill(false);
 };
@@ -123,7 +123,7 @@ onMounted(() => {
   items.forEach((item, index) => {
     item.addEventListener("contextmenu", (e: MouseEvent | any) => {
       e.preventDefault();
-      console.log(e.currentTarget.getAttribute("id"));
+      console.log("click id: " + e.currentTarget.getAttribute("id"));
       let targetId = e.currentTarget.getAttribute("id");
       let menu = document.getElementById("menu");
       if (menu !== null) {
@@ -133,15 +133,19 @@ onMounted(() => {
       }
       //   let menuList: any;
       if (!cutStatus.value) {
+        console.log("現在在剪");
         let cutMenu = document.getElementById("cut");
         cutMenu.onclick = () => {
           cut.value = document.getElementById(targetId);
           console.log("剪下: ");
           console.log(cut);
           // 使用 rowStyles 儲存背景顏色
-          rowStyles.value[index] = "gray";
+          rowStyles.value[targetId] = "gray";
           cutStatus.value = true;
         };
+      } else {
+        console.log(cutStatus);
+        insertedId.value = targetId;
       }
     });
   });
@@ -155,6 +159,11 @@ const cancelChoose = () => {
   rowStyles.value = {};
   cutStatus.value = false;
   cut.value = null;
+};
+const insertInto = () => {
+  console.log(insertedId.value);
+  console.log(cut.value);
+  console.log("serious?" + cut.value?.getAttribute("id"));
 };
 </script>
 <style scoped>

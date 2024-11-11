@@ -16,7 +16,6 @@
 import HelloTable from "../components/HelloTable.vue";
 import { reactive } from "vue";
 const table_title = ["id", "name", "age"];
-// const table_content = [{ id: 0, age: 33 },{}];
 const table_content = reactive(
   Array.from({ length: 15 }, (_, i) => ({
     id: i + 1,
