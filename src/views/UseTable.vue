@@ -5,6 +5,7 @@
     :page-size="per_page"
     :total-items="total_items"
     :check-box="true"
+    :sort-column = "sort_column"
   >
   </HelloTable>
   <!-- <button>展開</button> -->
@@ -24,7 +25,7 @@ const table_title = ref<string[]>([]);
 const table_content = ref<User[]>([]);
 const per_page = ref<number>();
 const total_items = ref<number>();
-
+const sort_column = ['username', 'role'];
 async function getData() {
   await setTimeout(() => {
     axios
@@ -41,7 +42,7 @@ async function getData() {
         console.log(error);
       });
     console.log("抓到API資料");
-  }, 2000);
+  }, 0);
 }
 getData();
 

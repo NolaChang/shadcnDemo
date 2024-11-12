@@ -10,7 +10,9 @@
             @change="toggleAllCheck"
           />
         </th>
-        <th v-for="th_text in props.title" v-text="th_text"></th>
+        <th v-for="th_text in props.title">
+          {{ th_text }}
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -26,7 +28,10 @@
             v-model="selectedItems[index]"
           />
         </th>
-        <td v-for="item_value in item">{{ item_value }}</td>
+        <td v-for="item_value in item">
+          <p v-if="item_value.indexOf('http') < 0">{{ item_value }}</p>
+          <img v-else :src="item_value" />
+        </td>
         <td v-show="false"><slot /></td>
       </tr>
     </tbody>
@@ -71,8 +76,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  sortColumn: {
+    type: Array,
+    default: [],
+  },
 });
 
+// const sort_column = ref<any[]>([]);
 const cut = ref<HTMLElement | null>(null);
 const cut_id = ref<string>("");
 const insertedId = ref<string>("");
@@ -99,6 +109,7 @@ const toggleAllCheck = () => {
   selectedItems.value = Array(show_table.value.length).fill(selectAll.value);
 };
 
+// 取得勾選欄位值
 const getCheckBox = () => {
   for (let i = 0; i <= selectedItems.value.length; i++) {
     if (selectedItems.value[i]) {
@@ -131,16 +142,33 @@ watch(
       const start = (current_page.value - 1) * props.pageSize;
       show_table.value = props.content.slice(start, start + props.pageSize);
       addListener();
+      addSortBtn();
     }, 3000);
   },
   { deep: true }
 );
-
-onMounted(() => {
-  addListener();
-});
+// props data 更動後
+watch(
+  () => props,
+  () => {
+    // to something
+  }
+);
+// onMounted(()=>{
+// 	addSortBtn();
+// })
+const addSortBtn = () => {
+  console.log(props.sortColumn);
+  let items = document.querySelectorAll("thead th");
+  items.forEach((item, _) => {
+    if (props.sortColumn.indexOf(item.innerText) > -1) {
+      item.innerHTML += `<button>^</button>`;
+    }
+  });
+};
 const addListener = () => {
   console.log("addListener");
+  // 等資料加載完對tr加監聽，不然加不到
   nextTick(() => {
     let items = document.querySelectorAll("tbody tr");
     console.log(items);
@@ -254,8 +282,8 @@ th {
 }
 tbody tr {
   /* border: 2px solid black; */
-  &:nth-child(even){
-    background-color:#ffefe3;
+  &:nth-child(even) {
+    background-color: #ffefe3;
   }
   &:hover {
     background-color: #fff4ec;
