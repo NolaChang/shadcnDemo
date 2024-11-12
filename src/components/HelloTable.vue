@@ -27,7 +27,7 @@
           />
         </th>
         <td v-for="item_value in item">{{ item_value }}</td>
-        <td><slot /></td>
+        <td v-show="false"><slot /></td>
       </tr>
     </tbody>
   </table>
@@ -37,6 +37,7 @@
     :key="page"
     v-for="page in totalPages"
     @click="chagePage(page)"
+    :style="{ backgroundColor: page === current_page ? 'aliceblue' : 'white' }"
   >
     {{ page }}
   </button>
@@ -51,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch, nextTick } from "vue";
 const props = defineProps({
   title: Array,
   content: {
@@ -76,8 +77,8 @@ const cut = ref<HTMLElement | null>(null);
 const cut_id = ref<string>("");
 const insertedId = ref<string>("");
 const cutStatus = ref<boolean>(false);
-const current_page = ref(1);
-const show_table = ref(props.content.slice(0, props.pageSize));
+const current_page = ref<number>(1);
+const show_table = ref<any[]>(props.content.slice(0, props.pageSize));
 const totalPages = Math.ceil(props.totalItems / props.pageSize);
 const chagePage = (page: number) => {
   current_page.value = page;
@@ -118,63 +119,76 @@ watch(
 watch(current_page, () => {
   const start = (current_page.value - 1) * props.pageSize;
   show_table.value = props.content.slice(start, start + props.pageSize);
+  addListener();
 });
+
 // 監聽 table_content 的變化，並觸發更新分頁資料
 watch(
-  props.content,
+  () => props.content,
   (newValue) => {
     console.log("table_content 更新了", newValue);
-    // 這裡可以放置一些邏輯來確保在資料變更時重新顯示當前頁面
-    // 比如更新當前頁面的資料（如果需要的話）
+    setTimeout(() => {
+      const start = (current_page.value - 1) * props.pageSize;
+      show_table.value = props.content.slice(start, start + props.pageSize);
+      addListener();
+    }, 3000);
   },
   { deep: true }
 );
 
 onMounted(() => {
-  let items = document.querySelectorAll("tr");
-  items.forEach((item, index) => {
-    item.addEventListener("contextmenu", (e: MouseEvent | any) => {
-      e.preventDefault();
-      console.log("click id: " + e.currentTarget.getAttribute("id"));
-      let targetId = e.currentTarget.getAttribute("id");
+  addListener();
+});
+const addListener = () => {
+  console.log("addListener");
+  nextTick(() => {
+    let items = document.querySelectorAll("tbody tr");
+    console.log(items);
+    items.forEach((item, index) => {
+      item.addEventListener("contextmenu", (e: MouseEvent | any) => {
+        e.preventDefault();
+        console.log("click id: " + e.currentTarget.getAttribute("id"));
+        let targetId = e.currentTarget.getAttribute("id");
+        let menu = document.getElementById("menu");
+        if (menu !== null) {
+          menu.style.top = `${e.clientY}px`;
+          menu.style.left = `${e.clientX}px`;
+          menu.classList.remove("hidden");
+        }
+        //   let menuList: any;
+        if (!cutStatus.value) {
+          console.log("現在在剪");
+          let cutMenu = document.getElementById("cut");
+          // 點擊剪下
+          cutMenu.onclick = () => {
+            cut.value = document.getElementById(targetId);
+            console.log("剪下: ");
+            console.log(cut);
+            // 使用 rowStyles 儲存背景顏色
+            rowStyles.value[targetId] = "gray";
+            cutStatus.value = true;
+            cut_id.value = targetId;
+            console.log(cut_id);
+          };
+        } else {
+          // console.log(cutStatus);
+          insertedId.value = targetId;
+        }
+      });
+    });
+    document.addEventListener("click", () => {
       let menu = document.getElementById("menu");
-      if (menu !== null) {
-        menu.style.top = `${e.clientY}px`;
-        menu.style.left = `${e.clientX}px`;
-        menu.classList.remove("hidden");
-      }
-      //   let menuList: any;
-      if (!cutStatus.value) {
-        console.log("現在在剪");
-        let cutMenu = document.getElementById("cut");
-        // 點擊剪下
-        cutMenu.onclick = () => {
-          cut.value = document.getElementById(targetId);
-          console.log("剪下: ");
-          console.log(cut);
-          // 使用 rowStyles 儲存背景顏色
-          rowStyles.value[targetId] = "gray";
-          cutStatus.value = true;
-          cut_id.value = targetId;
-          console.log(cut_id);
-        };
-      } else {
-        // console.log(cutStatus);
-        insertedId.value = targetId;
-      }
+      menu?.classList.add("hidden");
     });
   });
-  document.addEventListener("click", () => {
-    let menu = document.getElementById("menu");
-    menu?.classList.add("hidden");
-  });
-});
-
+};
+// 取消選取
 const cancelChoose = () => {
   rowStyles.value = {};
   cutStatus.value = false;
   cut.value = null;
 };
+// 向下插入
 const insertInto = async () => {
   rowStyles.value = {};
   console.log(`Switch ${insertedId.value} & ${cut_id.value}`);
@@ -192,8 +206,10 @@ const insertInto = async () => {
   props.content.splice(newIndex, 0, movedItem);
 
   // 資料更新後，重新更新顯示的當前頁面資料
-  const start = (current_page.value - 1) * props.pageSize;
-  show_table.value = props.content.slice(start, start + props.pageSize);
+  // setTimeout(() => {
+  //   const start = (current_page.value - 1) * props.pageSize;
+  //   show_table.value = props.content.slice(start, start + props.pageSize);
+  // }, 5000);
 
   cutStatus.value = false;
 };
@@ -236,11 +252,17 @@ th {
   padding: 8px 10px;
   /* pointer-events: none; */
 }
-tr {
-  border: 2px solid black;
-  &:hover {
-    background-color: aliceblue;
+tbody tr {
+  /* border: 2px solid black; */
+  &:nth-child(even){
+    background-color:#ffefe3;
   }
+  &:hover {
+    background-color: #fff4ec;
+  }
+}
+thead tr {
+  background-color: rgb(238, 238, 238);
 }
 table {
   border-collapse: collapse;
