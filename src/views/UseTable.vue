@@ -5,7 +5,8 @@
     :page-size="per_page"
     :total-items="total_items"
     :check-box="true"
-    :sort-column = "sort_column"
+    :sort-column="sort_column"
+    :total-page="total_page"
   >
   </HelloTable>
   <!-- <button>展開</button> -->
@@ -25,7 +26,10 @@ const table_title = ref<string[]>([]);
 const table_content = ref<User[]>([]);
 const per_page = ref<number>();
 const total_items = ref<number>();
-const sort_column = ['username', 'role'];
+const sort_column = ["username", "role"];
+const total_page = ref<number>();
+const current_page = ref<number>(1);
+
 async function getData() {
   await setTimeout(() => {
     axios
@@ -36,7 +40,9 @@ async function getData() {
         console.log(dataList.value);
         table_content.value = res.data.data.users;
         table_title.value = Object.keys(res.data.data.users[0]);
-        // console.log(Object.keys(res.data.data.users[0]));
+        total_page.value = dataList.value.total_pages;
+        per_page.value = dataList.value.per_page;
+        total_items.value = dataList.value.total;
       })
       .catch((error) => {
         console.log(error);
@@ -55,3 +61,6 @@ getData();
 //   }))
 // );
 </script>
+<style scoped>
+
+</style>
