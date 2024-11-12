@@ -2,13 +2,21 @@
   <HelloTable
     :title="table_title"
     :content="table_content"
+    :total-items="total_items"
+    :check-box="true"
+    :sort-column="sort_column"
+  >
+  </HelloTable>
+  <!-- <HelloTable
+    :title="table_title"
+    :content="table_content"
     :page-size="per_page"
     :total-items="total_items"
     :check-box="true"
     :sort-column="sort_column"
     :total-page="total_page"
   >
-  </HelloTable>
+  </HelloTable> -->
   <!-- <button>展開</button> -->
   <!-- <button class="editbtn" style="margin: 3px; color: darkorange; border: 1px solid darkorange; padding:3px 5px; border-radius:8px">編輯</button>
 <button class="deletebtn" style="margin: 3px; color: red; border: 1px solid red; padding:3px 5px; border-radius:8px">刪除</button> -->
@@ -61,6 +69,4 @@ getData();
 //   }))
 // );
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

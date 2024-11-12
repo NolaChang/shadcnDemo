@@ -15,8 +15,9 @@
         </th>
       </tr>
     </thead>
-    <tbody>
+    <tbody ref="el" class="sort-target">
       <tr
+        class="cursor-move"
         v-for="(item, index) in show_table"
         :id="item.id"
         :style="{ backgroundColor: rowStyles[item.id] }"
@@ -37,15 +38,19 @@
     </tbody>
   </table>
 
-  <button
-    class="pagination"
-    :key="page"
-    v-for="page in totalPages"
-    @click="chagePage(page)"
-    :style="{ backgroundColor: page === current_page ? 'aliceblue' : 'white' }"
-  >
-    {{ page }}
-  </button>
+  <div ref="el2">
+    <button
+      class="pagination"
+      :key="page"
+      v-for="page in totalPages"
+      @click="chagePage(page)"
+      :style="{
+        backgroundColor: page === current_page ? 'aliceblue' : 'white',
+      }"
+    >
+      {{ page }}
+    </button>
+  </div>
   <br /><br />
   <button id="getCheckBoxbtn" @click="getCheckBox">getCheckBox</button>
 
@@ -59,6 +64,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch, nextTick } from "vue";
 import axios from "axios";
+import { useDraggable } from "vue-draggable-plus";
 const props = defineProps({
   title: Array,
   content: {
@@ -83,7 +89,9 @@ const props = defineProps({
   },
 });
 
-// const sort_column = ref<any[]>([]);
+const el = ref();
+const el2 = ref();
+
 const cut = ref<HTMLElement | null>(null);
 const cut_id = ref<string>("");
 const insertedId = ref<string>("");
@@ -144,17 +152,19 @@ watch(
       show_table.value = props.content.slice(start, start + props.pageSize);
       addListener();
       addSortBtn();
+      useDraggable(el, show_table.value, {
+        // ghostClass: "ghost",
+        group: "changeIt",
+      });
+      useDraggable(el2, show_table.value, {
+        // ghostClass: "ghost",
+        group: "changeIt",
+      });
     }, 3000);
   },
   { deep: true }
 );
-// props data 更動後
-watch(
-  () => props,
-  () => {
-    // to something here
-  }
-);
+
 // onMounted(()=>{
 // 	addSortBtn();
 // })
@@ -253,7 +263,7 @@ const sortDataBtn = async (sort_col: string) => {
     .then((res: any) => {
       setTimeout(() => {
         console.log(`依照${sort_col}排序`);
-		console.log(res.data);
+        console.log(res.data);
       }, 2000);
     })
     .catch((error) => {
