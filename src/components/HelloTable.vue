@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch, nextTick } from "vue";
+import axios from "axios";
 const props = defineProps({
   title: Array,
   content: {
@@ -151,19 +152,22 @@ watch(
 watch(
   () => props,
   () => {
-    // to something
+    // to something here
   }
 );
 // onMounted(()=>{
 // 	addSortBtn();
 // })
 const addSortBtn = () => {
-  console.log(props.sortColumn);
+  //   console.log(props.sortColumn);
   let items = document.querySelectorAll("thead th");
   items.forEach((item, _) => {
-    if (props.sortColumn.indexOf(item.innerText) > -1) {
-      item.innerHTML += `<button>^</button>`;
+    const text = item.innerText;
+    if (props.sortColumn.indexOf(text) > -1) {
+      item.innerHTML += `<button id="sort${text}">^</button>`;
     }
+    let temp = document.getElementById("sort" + text);
+    temp?.addEventListener("click", () => sortDataBtn(text));
   });
 };
 const addListener = () => {
@@ -171,7 +175,7 @@ const addListener = () => {
   // 等資料加載完對tr加監聽，不然加不到
   nextTick(() => {
     let items = document.querySelectorAll("tbody tr");
-    console.log(items);
+    // console.log(items);
     items.forEach((item, index) => {
       item.addEventListener("contextmenu", (e: MouseEvent | any) => {
         e.preventDefault();
@@ -240,6 +244,21 @@ const insertInto = async () => {
   // }, 5000);
 
   cutStatus.value = false;
+};
+
+const sortDataBtn = async (sort_col: string) => {
+  //   console.log(sort_col);
+  await axios
+    .get("/mock/getUserList", { params: { sort: props.content } })
+    .then((res: any) => {
+      setTimeout(() => {
+        console.log(`依照${sort_col}排序`);
+		console.log(res.data);
+      }, 2000);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 </script>
 <style scoped>
